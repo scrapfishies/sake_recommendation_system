@@ -4,6 +4,7 @@ Functions to scrape TrueSake.com!
 
 # Imports
 import pandas as pd
+import numpy as np
 import re
 from random import randint
 from time import sleep
@@ -95,7 +96,7 @@ def find_product_keywords(full_description_text):
         try:
             result = kw_results_dict[word]
         except:
-            result = 'Missing'
+            result = np.nan
         kw_results.append(result)
 
     return kw_results
@@ -122,7 +123,7 @@ def get_product_info(prod_url):
         name = re.sub(r'[\n]', "", name).strip()
 
     except Exception as e:
-        name = 'Missing'
+        name = np.nan
 
     # Sake Type
     try:
@@ -131,7 +132,7 @@ def get_product_info(prod_url):
         sake_type = re.sub(r'[\n]', '', sake_type).strip()
 
     except Exception as e:
-        sake_type = 'Missing'
+        sake_type = np.nan
 
     # Product Price
     try:
@@ -139,14 +140,18 @@ def get_product_info(prod_url):
         price = re.sub(r'[\n]', '', price).strip()[1:]
 
     except Exception as e:
-        price = 'Missing'
+        price = np.nan
 
     # Product description section
     try:
         full_description = product_description_html.find(
             'div', class_='product-description rte').text
         full_description = re.sub(r'[\n]', '', full_description)
-
+        
+    except Exception as e:
+        full_description = np.nan
+        
+    try:
         # 4 main keywords
         results = find_product_keywords(full_description)
 
@@ -156,11 +161,10 @@ def get_product_info(prod_url):
         keyword_foods = results[3]     # Foods
 
     except Exception as e:
-        full_description = 'Missing'
-        keyword_word = 'Missing'
-        keyword_wine = 'Missing'
-        keyword_beer = 'Missing'
-        keyword_foods = 'Missing'
+        keyword_word = np.nan
+        keyword_wine = np.nan
+        keyword_beer = np.nan
+        keyword_foods = np.nan
 
     # Prefecture
     try:
@@ -170,7 +174,7 @@ def get_product_info(prod_url):
         prefecture = re.sub(r'[\n]', '', prefecture).strip()
 
     except Exception as e:
-        prefecture = 'Missing'
+        prefecture = np.nan
 
     # SMV
     try:
@@ -181,7 +185,7 @@ def get_product_info(prod_url):
         smv = re.sub(r'[\n]', '', smv).strip()
 
     except Exception as e:
-        smv = 'Missing'
+        smv = np.nan
 
     # Acidity
     try:
@@ -192,7 +196,7 @@ def get_product_info(prod_url):
         acidity = float(re.sub(r'[\n]', '', acidity).strip())
 
     except Exception as e:
-        acidity = 'Missing'
+        acidity = np.nan
 
     # Compile results list
     results_list = [prod_url,
